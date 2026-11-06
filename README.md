@@ -5,8 +5,8 @@ A cinematic, high-end full-stack web application built for the **QUIET BATTLESâ„
 ---
 
 ## ðŸš€ Live Preview & Demo
-- **Live Staging URL:** [Add your Vercel deployment link here]
-- **Repository:** [Add your GitHub repository link here]
+- **Live Staging URL:** https://quiet-battles.vercel.app/
+- **Repository:** https://github.com/AiyazMohammed25/quiet-battles
 
 ---
 
