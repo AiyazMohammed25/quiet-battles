@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import CartDrawer from "@/components/CartDrawer";
+import CartHydration from "@/components/CartHydration";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
     "Armor for the modern daily struggle. Discover Quiet Battles™ Series 01: The Gentle Armor.",
 };
 
+// Wrap every page with the shared navigation, footer, and cart drawer.
 export default function RootLayout({
   children,
 }: {
@@ -23,6 +25,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-[#0a0a0a] text-white antialiased">
         <div className="flex min-h-screen flex-col">
           <Navbar />
+          <CartHydration />
           <main className="flex-1">{children}</main>
           <Footer />
         </div>

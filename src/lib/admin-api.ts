@@ -14,7 +14,7 @@ import {
 import { connectToDatabase } from "@/lib/db";
 
 function authorize(request: NextRequest, mutating = false) {
-  // Check Origin before trusting the same-site cookie on any state-changing request.
+  // Check the session and, for writes, confirm the request came from this site.
   if (mutating) {
     const originError = requireSameOrigin(request);
     if (originError) return originError;
@@ -23,6 +23,7 @@ function authorize(request: NextRequest, mutating = false) {
   return null;
 }
 
+// Convert a MongoDB Series document into a safe JSON response.
 function serializeSeries(document: {
   _id: Types.ObjectId;
   title: string;
@@ -43,6 +44,7 @@ function serializeSeries(document: {
   };
 }
 
+// Convert MongoDB references and fields into a safe Chapter response.
 function serializeChapter(document: {
   _id: Types.ObjectId;
   seriesId: Types.ObjectId;
@@ -65,6 +67,7 @@ function serializeChapter(document: {
   };
 }
 
+// Convert a MongoDB Product document into a safe JSON response.
 function serializeProduct(document: {
   _id: Types.ObjectId;
   name: string;
@@ -89,6 +92,7 @@ function serializeProduct(document: {
   };
 }
 
+// Return every record in the selected collection to a signed-in admin.
 export async function listAdminContent(
   request: NextRequest,
   resource: Resource,
@@ -115,6 +119,7 @@ export async function listAdminContent(
   }
 }
 
+// Check that a chapter's selected Series and optional Product still exist.
 async function validateChapterReferences(input: ChapterInput) {
   if (!Types.ObjectId.isValid(input.seriesId)) {
     throw new InputError("Select a valid series.");
@@ -132,6 +137,7 @@ async function validateChapterReferences(input: ChapterInput) {
   }
 }
 
+// Validate and save a new Series, Chapter, or Product.
 export async function createAdminContent(
   request: NextRequest,
   resource: Resource,
@@ -178,6 +184,7 @@ export async function createAdminContent(
   }
 }
 
+// Return one admin record after checking the ID and session.
 export async function getAdminContent(
   request: NextRequest,
   resource: Resource,
@@ -217,6 +224,7 @@ export async function getAdminContent(
   }
 }
 
+// Validate the submitted fields and update one existing admin record.
 export async function updateAdminContent(
   request: NextRequest,
   resource: Resource,
@@ -278,6 +286,7 @@ export async function updateAdminContent(
   }
 }
 
+// Delete one admin record and prevent broken chapter references.
 export async function deleteAdminContent(
   request: NextRequest,
   resource: Resource,

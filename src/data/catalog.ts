@@ -190,10 +190,12 @@ export const CHAPTERS: Chapter[] = [
   },
 ];
 
+// Find a starter product by its catalog ID.
 export function getProduct(productId: string): Product | undefined {
   return PRODUCTS.find((product) => product.id === productId);
 }
 
+// Find a starter chapter by its catalog ID.
 export function getChapter(chapterId: string): Chapter | undefined {
   return CHAPTERS.find((chapter) => chapter.id === chapterId);
 }

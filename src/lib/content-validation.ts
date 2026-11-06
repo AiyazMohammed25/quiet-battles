@@ -43,6 +43,7 @@ export interface ProductInput {
 
 export class InputError extends Error {}
 
+// Check that a value is a plain object before reading its fields.
 function isRecord(value: unknown): value is Record<string, unknown> {
   return (
     typeof value === "object" &&
@@ -56,11 +57,12 @@ function assertKeys(
   value: Record<string, unknown>,
   allowed: readonly string[],
 ) {
-  // Reject unknown keys instead of passing arbitrary request properties into MongoDB updates.
+  // Reject unknown fields so clients cannot update data outside the form.
   const unexpected = Object.keys(value).find((key) => !allowed.includes(key));
   if (unexpected) throw new InputError(`Unexpected field: ${unexpected}.`);
 }
 
+// Trim a required text value and check its allowed length.
 function requiredText(
   value: unknown,
   field: string,
@@ -84,7 +86,7 @@ function optionalImage(value: unknown, field: string) {
   const image = requiredText(value, field, 2048);
   if (image.startsWith("/") && !image.startsWith("//")) return image;
 
-  // External images must use HTTPS and cannot embed credentials or fragments.
+  // Allow local paths or safe HTTPS URLs for image fields.
   try {
     const url = new URL(image);
     if (
@@ -101,6 +103,7 @@ function optionalImage(value: unknown, field: string) {
   throw new InputError(`${field} must be an HTTPS URL or a local path.`);
 }
 
+// Use the requested publication state or the default state.
 function contentStatus(value: unknown): ContentStatus {
   if (
     value === undefined ||
@@ -112,6 +115,7 @@ function contentStatus(value: unknown): ContentStatus {
   throw new InputError("Status must be Published or Draft.");
 }
 
+// Check that a URL slug uses only lowercase letters, numbers, and hyphens.
 function requiredSlug(value: unknown) {
   const slug = requiredText(value, "Slug", 120).toLowerCase();
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
@@ -122,6 +126,7 @@ function requiredSlug(value: unknown) {
   return slug;
 }
 
+// Check that a number is a whole number within the allowed range.
 function positiveInteger(value: unknown, field: string, maximum: number) {
   if (
     typeof value !== "number" ||
@@ -134,6 +139,7 @@ function positiveInteger(value: unknown, field: string, maximum: number) {
   return value;
 }
 
+// Validate all fields that can be saved on a Series.
 function parseSeries(value: Record<string, unknown>): SeriesInput {
   assertKeys(value, [
     "title",
@@ -162,6 +168,7 @@ function parseSeries(value: Record<string, unknown>): SeriesInput {
   };
 }
 
+// Validate all fields and database references for a Chapter.
 function parseChapter(value: Record<string, unknown>): ChapterInput {
   assertKeys(value, [
     "seriesId",
@@ -188,6 +195,7 @@ function parseChapter(value: Record<string, unknown>): ChapterInput {
   };
 }
 
+// Validate product details, sizes, images, and stock status.
 function parseProduct(value: Record<string, unknown>): ProductInput {
   assertKeys(value, [
     "name",
@@ -246,6 +254,7 @@ function parseProduct(value: Record<string, unknown>): ProductInput {
   };
 }
 
+// Check a request body using the rules for its selected collection.
 export function parseContentInput(
   resource: "series",
   input: unknown,
@@ -269,6 +278,7 @@ export function parseContentInput(
   return parseProduct(input);
 }
 
+// Accept only the three collections that the admin API supports.
 export function parseResource(value: string): Resource | null {
   return value === "series" || value === "chapters" || value === "products"
     ? value

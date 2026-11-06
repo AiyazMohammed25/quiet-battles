@@ -2,6 +2,7 @@ import { Error as MongooseError } from "mongoose";
 import { NextResponse } from "next/server";
 import { InputError } from "@/lib/content-validation";
 
+// Turn known validation and database errors into clear HTTP responses.
 export function errorResponse(error: unknown) {
   if (error instanceof InputError) {
     return NextResponse.json({ error: error.message }, { status: 400 });
@@ -39,6 +40,7 @@ export function errorResponse(error: unknown) {
   );
 }
 
+// Read and parse a small JSON request body before API validation.
 export async function readJsonBody(request: Request) {
   const contentLength = Number(request.headers.get("content-length") ?? 0);
   if (contentLength > 64 * 1024) {

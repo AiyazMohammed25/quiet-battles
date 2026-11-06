@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+// Show the admin dashboard at the /admin route.
 export default function AdminPage() {
   return <AdminDashboard />;
 }

@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { getPublishedChapterCounts, getPublishedSeries } from "@/lib/public-content";
 
+// Load published series and their chapter counts for the archive index.
 async function ArchiveContent() {
   await connection();
   const seriesList = await getPublishedSeries();
@@ -96,6 +97,7 @@ async function ArchiveContent() {
   );
 }
 
+// Show the archive index with a loading message while it loads.
 export default function ArchivePage() {
   return (
     <Suspense

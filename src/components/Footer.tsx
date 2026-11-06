@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
+// Show the footer links and brand note on every page.
 export default function Footer() {
   return (
     <footer className="border-t border-white/10">

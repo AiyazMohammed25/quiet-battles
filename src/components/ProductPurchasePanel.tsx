@@ -12,8 +12,10 @@ import {
 import { useCartStore } from "@/store/useCartStore";
 import type { ProductContent, ProductSize } from "@/types/content";
 
+// Format a product price as Indian rupees.
 const formatPrice = (price: number) => `₹${price.toLocaleString("en-IN")}`;
 
+// Let the customer choose a size and add the product to the cart.
 export default function ProductPurchasePanel({
   product,
 }: {
@@ -26,6 +28,7 @@ export default function ProductPurchasePanel({
   const [added, setAdded] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
 
+  // Add this product with the selected size, then show brief feedback.
   const handleAddToCart = () => {
     addItem({
       id: product.slug,

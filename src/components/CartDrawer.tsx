@@ -5,9 +5,11 @@ import { Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import { useCartStore } from "@/store/useCartStore";
 
+// Format a price as Indian rupees for the cart.
 const formatPrice = (price: number) =>
   `₹${price.toLocaleString("en-IN", { maximumFractionDigits: 0 })}`;
 
+// Show cart items and let the user change quantities or remove items.
 export default function CartDrawer() {
   const isOpen = useCartStore((state) => state.isOpen);
   const items = useCartStore((state) => state.items);
@@ -18,10 +20,15 @@ export default function CartDrawer() {
     (total, item) => total + item.price * item.quantity,
     0,
   );
+  const totalQuantity = items.reduce(
+    (total, item) => total + item.quantity,
+    0,
+  );
 
   useEffect(() => {
     if (!isOpen) return;
 
+    // Close the cart when the user presses Escape.
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") toggleCart(false);
     };
@@ -55,7 +62,7 @@ export default function CartDrawer() {
               id="cart-title"
               className="mt-1 text-sm font-semibold uppercase tracking-[0.16em]"
             >
-              The Bag ({items.length})
+              The Bag ({totalQuantity})
             </h2>
           </div>
           <button

@@ -1,3 +1,4 @@
+// Pick a repeating artwork style based on the chapter number.
 export function chapterVisual(chapterNumber: number) {
   const visuals = [
     "visual-genesis",

@@ -9,6 +9,7 @@ import {
 import { InputError } from "@/lib/content-validation";
 import { errorResponse, readJsonBody } from "@/lib/api-response";
 
+// Tell the dashboard whether admin access is configured and signed in.
 export async function GET(request: NextRequest) {
   return NextResponse.json({
     authenticated: isAdminAuthenticated(request),
@@ -16,6 +17,7 @@ export async function GET(request: NextRequest) {
   });
 }
 
+// Check the submitted password and create an admin session.
 export async function POST(request: NextRequest) {
   const originError = requireSameOrigin(request);
   if (originError) return originError;
@@ -37,6 +39,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// Clear the admin session cookie to sign the user out.
 export async function DELETE(request: NextRequest) {
   const originError = requireSameOrigin(request);
   if (originError) return originError;

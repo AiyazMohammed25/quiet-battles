@@ -9,11 +9,12 @@ import { ChapterModel } from "@/models/Chapter";
 import { ProductModel } from "@/models/Product";
 import { SeriesModel } from "@/models/Series";
 
+// Add starter records that are missing without replacing admin changes.
 async function seedCatalog() {
   loadEnvConfig(process.cwd());
   await connectToDatabase();
 
-  // Upsert only missing starter records so re-running the seed never overwrites admin edits.
+  // Insert starter data only when it does not exist, preserving later admin edits.
   const series = await SeriesModel.findOneAndUpdate(
     { slug: SERIES_01.id },
     {

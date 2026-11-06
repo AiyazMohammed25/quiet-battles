@@ -9,6 +9,7 @@ import {
 } from "@/lib/public-content";
 import { chapterVisual } from "@/lib/visuals";
 
+// Load the featured published collection and products for the homepage.
 async function HomeContent() {
   await connection();
   const seriesList = await getPublishedSeries();
@@ -182,6 +183,7 @@ async function HomeContent() {
   );
 }
 
+// Show the homepage and its loading message while database content loads.
 export default function Home() {
   return (
     <Suspense

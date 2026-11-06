@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Keep the app's route content dynamic while streaming server-rendered data.
   experimental: {
     agentFeedback: true,
   },

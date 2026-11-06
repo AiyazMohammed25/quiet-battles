@@ -11,6 +11,7 @@ const links = [
   { href: "/archive/series-01", label: "Series 01" },
 ];
 
+// Show site navigation and the current cart item count.
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const itemCount = useCartStore((state) =>

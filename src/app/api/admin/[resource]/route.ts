@@ -9,11 +9,13 @@ type RouteContext = {
   params: Promise<{ resource: string }>;
 };
 
+// Read the collection name from the URL and confirm it is supported.
 async function getResource(context: RouteContext) {
   const { resource } = await context.params;
   return parseResource(resource);
 }
 
+// Return all records in the requested admin collection.
 export async function GET(request: NextRequest, context: RouteContext) {
   const resource = await getResource(context);
   if (!resource) {
@@ -22,6 +24,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
   return listAdminContent(request, resource);
 }
 
+// Create a record in the requested admin collection.
 export async function POST(request: NextRequest, context: RouteContext) {
   const resource = await getResource(context);
   if (!resource) {

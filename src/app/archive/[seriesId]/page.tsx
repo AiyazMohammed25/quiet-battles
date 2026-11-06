@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   title: "Series 01 — The Gentle Armor",
 };
 
+// Load one published series and its chapters for the archive page.
 async function SeriesContent({
   params,
 }: {
@@ -89,6 +90,7 @@ async function SeriesContent({
   );
 }
 
+// Show the series page and its loading message.
 export default function SeriesPage({
   params,
 }: {

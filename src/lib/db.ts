@@ -19,6 +19,7 @@ global.mongooseCache = cache;
 
 export class DatabaseConfigurationError extends Error {}
 
+// Connect to MongoDB once and reuse the same connection for later requests.
 export async function connectToDatabase() {
   if (cache.connection) return cache.connection;
 

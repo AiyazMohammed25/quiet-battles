@@ -25,8 +25,8 @@ A cinematic, high-end full-stack web application built for the **QUIET BATTLES�
 
 1. **Cinematic Homepage:** Implements the core brand identity and tagline *"WEAR YOUR BATTLES"* with immersive dark-mode aesthetics (`#0a0a0a` carbon black theme).
 2. **The Archive & Chapters:** Showcases *SERIES 01 – THE GENTLE ARMOR™* through 5 interactive, dynamic chapter routes featuring rich editorial storytelling.
-3. **Product & E-Commerce Flow:** Comprehensive product specifications, interactive size selector (S to XXL), and a reactive slide-over Cart drawer powered by Zustand.
-4. **Admin CMS Dashboard (`/admin`):** Fully integrated control panel allowing administrators to create, read, update, and delete Series, Chapters, and Products directly synced with MongoDB.
+3. **Product & E-Commerce Flow:** Product pages include an interactive size selector (S to XXL) and a Zustand cart drawer. Cart contents are saved in browser `localStorage`, so they remain after a reload; checkout and inventory reservation are not implemented.
+4. **Admin CMS Dashboard (`/admin`):** Administrators can create, read, update, and delete Series, Chapters, and Products in MongoDB. New chapters default to the next available number in the selected series.
 
 ---
 

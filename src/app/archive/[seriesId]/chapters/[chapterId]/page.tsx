@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   title: "Chapter — The Gentle Armor",
 };
 
+// Load a chapter, its story, and its linked product for this URL.
 async function ChapterContent({
   params,
 }: {
@@ -157,6 +158,7 @@ async function ChapterContent({
   );
 }
 
+// Show the chapter page with a loading message while data is fetched.
 export default function ChapterPage({
   params,
 }: {

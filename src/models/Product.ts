@@ -22,6 +22,7 @@ const productSchema = new Schema(
       type: [{ type: String, enum: PRODUCT_SIZES }],
       required: true,
       validate: {
+        // Require at least one size and prevent duplicate sizes.
         validator: (sizes: string[]) =>
           sizes.length > 0 && new Set(sizes).size === sizes.length,
         message: "Choose at least one unique size.",

@@ -62,10 +62,12 @@ const collectionInfo: Record<
   products: { label: "Products", singular: "product", icon: Package },
 };
 
+// Check whether an API response is a plain object before reading its fields.
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+// Turn a name into a URL-friendly slug for Series and Products.
 function slugify(value: string) {
   return value
     .normalize("NFKD")
@@ -76,6 +78,7 @@ function slugify(value: string) {
     .replace(/^-|-$/g, "");
 }
 
+// Send an admin API request and return its data or a readable error.
 async function apiRequest<T>(
   url: string,
   options: RequestInit = {},
@@ -100,12 +103,14 @@ async function apiRequest<T>(
   return body.data as T;
 }
 
+// Pick the correct display name for the selected type of record.
 function displayName(entry: Entry, collection: Collection) {
   if (collection === "series") return (entry as SeriesContent).title;
   if (collection === "chapters") return (entry as ChapterContent).title;
   return (entry as ProductContent).name;
 }
 
+// Fill the editor form with an existing record, or return a blank form.
 function makeDraft(entry?: Entry, collection?: Collection): Draft {
   if (!entry || !collection) return { ...EMPTY_DRAFT };
 
@@ -150,8 +155,16 @@ function makeDraft(entry?: Entry, collection?: Collection): Draft {
   };
 }
 
+// Choose the next unused chapter number for the selected series.
+function nextChapterNumber(seriesId: string, chapters: ChapterContent[]) {
+  const chapterNumbers = chapters
+    .filter((chapter) => chapter.seriesId === seriesId)
+    .map((chapter) => chapter.chapterNumber);
+  return Math.max(0, ...chapterNumbers) + 1;
+}
+
+// Convert the form values into the API fields for the selected collection.
 function buildPayload(collection: Collection, draft: Draft) {
-  // Convert the shared string-based form draft into the typed API shape for the selected collection.
   const status = draft.status as ContentStatus;
   if (collection === "series") {
     return {
@@ -186,6 +199,7 @@ function buildPayload(collection: Collection, draft: Draft) {
   };
 }
 
+// Run admin sign-in and show forms for managing Series, Chapters, and Products.
 export default function AdminDashboard() {
   const [activeCollection, setActiveCollection] =
     useState<Collection>("series");
@@ -203,8 +217,8 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  // Reload all collections so the dashboard shows the latest database records.
   const loadContent = async () => {
-    // Load all three related collections concurrently so parent selectors stay current after every save.
     const [series, chapters, products] = await Promise.all([
       apiRequest<SeriesContent[]>("/api/admin/series"),
       apiRequest<ChapterContent[]>("/api/admin/chapters"),
@@ -216,6 +230,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     let active = true;
 
+    // Check whether a saved session exists when the dashboard first opens.
     const checkSession = async () => {
       try {
         const session = await apiRequest<{
@@ -245,6 +260,7 @@ export default function AdminDashboard() {
     };
   }, []);
 
+  // Send the password to the server and load records after a successful login.
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
@@ -268,6 +284,7 @@ export default function AdminDashboard() {
     }
   };
 
+  // Sign out and clear the records from the page.
   const handleLogout = async () => {
     setError("");
     try {
@@ -283,14 +300,24 @@ export default function AdminDashboard() {
     }
   };
 
+  // Reset the editor and open a blank form for a new record.
   const openCreate = () => {
     setEditingId(null);
-    setDraft({ ...EMPTY_DRAFT });
+    setDraft({
+      ...EMPTY_DRAFT,
+      seriesId:
+        activeCollection === "chapters" ? (content.series[0]?.id ?? "") : "",
+      chapterNumber:
+        activeCollection === "chapters" && content.series[0]
+          ? String(nextChapterNumber(content.series[0].id, content.chapters))
+          : EMPTY_DRAFT.chapterNumber,
+    });
     setError("");
     setNotice("");
     setEditorOpen(true);
   };
 
+  // Copy the selected record into the editor form.
   const openEdit = (entry: Entry) => {
     setEditingId(entry.id);
     setDraft(makeDraft(entry, activeCollection));
@@ -299,9 +326,13 @@ export default function AdminDashboard() {
     setEditorOpen(true);
   };
 
+  // Update one form value and keep generated slugs in sync with names.
   const changeField = (field: string, value: string) => {
     setDraft((current) => {
       const next = { ...current, [field]: value };
+      if (activeCollection === "chapters" && field === "seriesId") {
+        next.chapterNumber = String(nextChapterNumber(value, content.chapters));
+      }
       if (activeCollection === "series" && field === "title") {
         const oldSlug = slugify(current.title);
         if (!current.slug || current.slug === oldSlug) {
@@ -318,6 +349,7 @@ export default function AdminDashboard() {
     });
   };
 
+  // Create or update the record, then reload the saved database data.
   const saveEntry = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
@@ -349,6 +381,7 @@ export default function AdminDashboard() {
     }
   };
 
+  // Delete the selected record after the admin confirms the action.
   const confirmDelete = async () => {
     if (!deleteTarget) return;
     setError("");
@@ -855,6 +888,7 @@ export default function AdminDashboard() {
   );
 }
 
+// Show a reusable single-line text input in the editor form.
 function TextField({
   label,
   value,
@@ -882,6 +916,7 @@ function TextField({
   );
 }
 
+// Show a reusable whole-number input in the editor form.
 function NumberField({
   label,
   value,
@@ -914,6 +949,7 @@ function NumberField({
   );
 }
 
+// Show a reusable multi-line text input in the editor form.
 function TextAreaField({
   label,
   value,
@@ -944,6 +980,7 @@ function TextAreaField({
   );
 }
 
+// Show a reusable dropdown for choosing a linked record or status.
 function SelectField({
   label,
   value,

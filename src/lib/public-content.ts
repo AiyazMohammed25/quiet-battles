@@ -10,6 +10,7 @@ import type {
   SeriesContent,
 } from "@/types/content";
 
+// Convert a Series database record into data that a page can use.
 function toSeries(document: {
   _id: { toString(): string };
   title: string;
@@ -30,6 +31,7 @@ function toSeries(document: {
   };
 }
 
+// Convert a Chapter database record into data that a page can use.
 function toChapter(document: {
   _id: { toString(): string };
   seriesId: { toString(): string };
@@ -52,6 +54,7 @@ function toChapter(document: {
   };
 }
 
+// Convert a Product database record into data that a page can use.
 function toProduct(document: {
   _id: { toString(): string };
   name: string;
@@ -76,6 +79,7 @@ function toProduct(document: {
   };
 }
 
+// Return published series, newest release year first.
 export async function getPublishedSeries() {
   await connectToDatabase();
   const documents = await SeriesModel.find({ status: "Published" })
@@ -84,6 +88,7 @@ export async function getPublishedSeries() {
   return documents.map(toSeries);
 }
 
+// Find one published series by its URL slug.
 export async function getPublishedSeriesBySlug(slug: string) {
   await connectToDatabase();
   const document = await SeriesModel.findOne({
@@ -93,6 +98,7 @@ export async function getPublishedSeriesBySlug(slug: string) {
   return document ? toSeries(document) : null;
 }
 
+// Return the published chapters for one series in chapter order.
 export async function getPublishedChapters(seriesId: string) {
   await connectToDatabase();
   const documents = await ChapterModel.find({
@@ -104,12 +110,13 @@ export async function getPublishedChapters(seriesId: string) {
   return documents.map(toChapter);
 }
 
+// Return one published chapter and its linked published product, if any.
 export async function getPublishedChapter(
   seriesId: string,
   chapterNumber: number,
 ): Promise<ChapterWithProduct | null> {
   await connectToDatabase();
-  // Resolve the chapter and its optional published product together for the story's product callout.
+  // Load the chapter and its optional published product for the story page.
   const document = await ChapterModel.findOne({
     seriesId,
     chapterNumber,
@@ -131,6 +138,7 @@ export async function getPublishedChapter(
   };
 }
 
+// Return all published products, newest first.
 export async function getPublishedProducts() {
   await connectToDatabase();
   const documents = await ProductModel.find({ status: "Published" })
@@ -139,6 +147,7 @@ export async function getPublishedProducts() {
   return documents.map(toProduct);
 }
 
+// Find one published product by its URL slug.
 export async function getPublishedProductBySlug(slug: string) {
   await connectToDatabase();
   const document = await ProductModel.findOne({
@@ -151,7 +160,7 @@ export async function getPublishedProductBySlug(slug: string) {
 export async function getPublishedChapterCounts(seriesIds: string[]) {
   await connectToDatabase();
   const objectIds = seriesIds.map((id) => new Types.ObjectId(id));
-  // Mongo stores references as ObjectIds, so convert the serialized IDs before grouping chapter counts.
+  // Convert string IDs to MongoDB IDs before counting chapters by series.
   const counts = await ChapterModel.aggregate<{
     _id: { toString(): string };
     count: number;
